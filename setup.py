@@ -5,7 +5,7 @@ def load_requirements(fname):
         lines = f.readlines()
     return lines
 def read_readme():
-    with open('README.md', 'f') as f:
+    with open('README.md', 'r') as f:
         return f.read()
 
 setup(

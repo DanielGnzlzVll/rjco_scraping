@@ -260,7 +260,7 @@ def scrap_city(driver, city_name, city_code, text2search):
     return df
 
 
-def scraping(text2search="sura", output_file="result.xlsx"):
+def scraping(text2search="sura", output_file=None):
     """Esta funcion permite buscar en la url ´´ENTRY_ENDPOINT´´
     de la Rama judicial Colombiana los procesos de demanda encontra
     de personas juridicas cuya razon coincida con ´´text2search´´ y
@@ -307,12 +307,14 @@ def scraping(text2search="sura", output_file="result.xlsx"):
             pass
         remove_temp_files()
         try:
-            df.to_excel("result.xlsx")
+            if output_file:
+                df.to_excel("result.xlsx")
         except Exception as e:
             logger.error("No se ha podido guardar el resultado")
             logger.exception(e)
 
     logger.info("Scraping terminado")
+    return df
 
 
 @click.command()
