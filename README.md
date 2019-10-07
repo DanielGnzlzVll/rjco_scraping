@@ -24,7 +24,7 @@ python setup install
 ```
 ## Usage
 
-### from bash
+### from console
 
 ```bash
 python -m rjco_scraping
@@ -40,7 +40,7 @@ rjco_scraping
 import rjco_scraping
 results = rjco_scraping.scraping(text2search="sura")
 #or 
-rjco_scraping.scraping(text2search="sura"), output_file="result.xlsx")
+rjco_scraping.scraping(text2search="sura", output_file="result.xlsx")
 ```
 
 ## Windows
