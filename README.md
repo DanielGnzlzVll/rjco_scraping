@@ -1,6 +1,10 @@
 # rjco_scraping (RAMA JUDICIAL COLOMBIANA)
 This package allows you to do web scraping on the website of 'Rama Judicial Colombiana'.
 
+## Requirements
+The major requirement is the web browser Google Chrome,
+this program *ONLY* work properly with Chrome
+
 ## Install
 ```bash
 git clone https://github.com/DanielGnzlzVll/rjco_scraping.git
