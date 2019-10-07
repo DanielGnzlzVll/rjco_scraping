@@ -44,7 +44,7 @@ rjco_scraping.scraping(text2search="sura"), output_file="result.xlsx")
 ```
 
 ## Windows
-You can download the latest release from [here](DanielGnzlzVll/rjco_scraping/releases/latest/download/rjco_scraping.exe) then open the .exe file
+You can download the latest release from [here](https://github.com/DanielGnzlzVll/rjco_scraping/releases/latest/download/rjco_scraping.exe) then open the .exe file.
 
 
 
