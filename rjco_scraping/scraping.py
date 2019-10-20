@@ -55,8 +55,7 @@ def wait_for_by_name(driver, element_name, timeout=10):
 
     wait = WebDriverWait(driver, timeout)
     logger.debug("Esperando por: " + element_name)
-    element = wait.until(ec.visibility_of_element_located((By.NAME, 
-                                                            element_name)))
+    element = wait.until(ec.visibility_of_element_located((By.NAME, element_name)))
     logger.debug(element_name + ": OK")
     return element
 
@@ -102,8 +101,7 @@ def wait_for_all_by_name(driver, element_name, timeout=10):
 
     wait = WebDriverWait(driver, timeout)
     logger.debug("Esperando por: " + element_name)
-    element = wait.until(ec.visibility_of_all_elements_located((By.NAME,
-                                                                element_name)))
+    element = wait.until(ec.visibility_of_all_elements_located((By.NAME, element_name)))
     logger.debug(element_name + ": OK")
     return element
 
@@ -144,11 +142,10 @@ def test_error(driver):
     try:
         wait = WebDriverWait(driver, 3)
         xpath = "//div[@id='modalError' and @style='display: block;']"
-        element_error = wait.until(ec.visibility_of_element_located((By.XPATH,
-                                                                    xpath)))
+        wait.until(ec.visibility_of_element_located((By.XPATH, xpath)))
         handle_error(driver)
         return True
-    except TimeoutException as e:
+    except TimeoutException:
         return False
 
 
@@ -268,10 +265,10 @@ def scraping(text2search="sura", output_file=None):
     
     :param text2search: Parametros de busqueda, defaults to "sura"
     :type text2search: str, optional
-    :param output_file: , defaults to "result.xlsx"
+    :param output_file: nombre del archivo de resultado, defaults to "result.xlsx"
     :type output_file: str, optional
     :return: resultados en cada entidad registrada en dicha pagina
-    :rtype: pf.DataFrame
+    :rtype: pd.DataFrame
     """
 
     logger.info("Iniciando scraping")
