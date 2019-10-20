@@ -1,0 +1,1 @@
+pyinstaller --onefile -n rjco_scraping --add-data "env\lib\site-packages\webdriver_manager\default.ini;webdriver_manager" rjco_scraping\scraping.py
