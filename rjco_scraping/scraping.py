@@ -1,4 +1,5 @@
 import glob
+import json
 import logging
 import os
 import sys
@@ -257,7 +258,7 @@ def scrap_city(driver, city_name, city_code, text2search):
     return df
 
 
-def scraping(text2search="sura", output_file=None):
+def scraping_by_text(text2search="sura", output_file=None):
     """Esta funcion permite buscar en la url ´´ENTRY_ENDPOINT´´
     de la Rama judicial Colombiana los procesos de demanda encontra
     de personas juridicas cuya razon coincida con ´´text2search´´ y
@@ -314,16 +315,161 @@ def scraping(text2search="sura", output_file=None):
     return df
 
 
+def scraping_by_number(code="0508831030012015007900", output_file=None):
+    """Esta funcion permite buscar en la url ´´ENTRY_ENDPOINT´´
+    de la Rama judicial Colombiana el proceso que tenga un numero de radicacion
+    que coincida con ´´code´´ y almacenar los resultados en un archivo de json.
+    
+    :param code: Parametros de busqueda, defaults to "0508831030012015007900"
+    :type code: str, optional
+    :param output_file: nombre del archivo de resultado, defaults to "result.json"
+    :type output_file: str, optional
+    :return: informacion del proceso
+    :rtype: dict
+    """
+
+    def _tranform_table(data, col):
+        columns = [
+            "fecha_actuacion",
+            "actuacion",
+            "anotacion",
+            "fecha_inicia_termino",
+            "fecha_finaliza_termino",
+            "fecha_registro",
+        ]
+        result = [x.text for x in data]
+        result = [
+            dict(zip(columns, result[i : i + col])) for i in range(0, len(result), col)
+        ]
+        return result
+
+    logger.info("Iniciando scraping")
+    resultado = {}
+    try:
+        driver = webdriver.Chrome(ChromeDriverManager().install())
+        driver.get(ENTRY_ENDPOINT)
+        if test_error(driver):
+            logger.error("Se ha presentado una ventana de error inexperada")
+
+        ddlCiudad = wait_for_by_name(driver, "ddlCiudad")
+        select_city = Select(ddlCiudad)
+        logger.info(f"Buscando en: {code[:5]}")
+        select_city.select_by_value(code[:5])
+        if test_error(driver):
+            logger.error(
+                "Se ha presentado una ventana "
+                "de error inexperada para el numero de radicado: " + code
+            )
+        ddlEntidadEspecialidad = wait_for_by_name(driver, "ddlEntidadEspecialidad")
+        select_entidad = Select(ddlEntidadEspecialidad)
+        select_entidad.select_by_index(1)
+        if test_error(driver):
+            logger.error(
+                "Se ha presentado una ventana "
+                "de error inexperada para el numero de radicado: " + code
+            )
+        xpath_txt = "//div[@id='divNumRadicacion']/table/tbody/tr/td/div/input"
+        txtNumRadicacion = wait_for_by_xpath(driver, xpath_txt)
+        txtNumRadicacion.clear()
+        txtNumRadicacion.send_keys(code)
+        sliderBehaviorConsultaNom_railElement = driver.find_element_by_id(
+            "sliderBehaviorNumeroProceso_railElement"
+        )
+        move = ActionChains(driver)
+        move.click_and_hold(sliderBehaviorConsultaNom_railElement).move_by_offset(
+            10, 0
+        ).release().perform()
+
+        btnConsulta = wait_for_by_xpath(
+            driver,
+            "//div[@id='divNumRadicacion']/table/tbody/tr/td/input[@value='Consultar']",
+        )
+        btnConsulta.click()
+        if test_error(driver):
+            logger.error(
+                "Se ha presentado una ventana "
+                "de error inexperada para el numero de radicado: " + code
+            )
+        resultado = {"numeroRadicacion": code, "datos": {}, "actuaciones": []}
+        contenedor = wait_for_by_xpath(
+            driver, "//div[@id='divActuaciones']/div[@class='contenedor']"
+        )
+
+        resultado["datos"]["despacho"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblJuzgadoActual']"
+        ).text
+        resultado["datos"]["ponente"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblPonente']"
+        ).text
+        resultado["datos"]["tipo"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblTipo']"
+        ).text
+        resultado["datos"]["clase"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblClase']"
+        ).text
+        resultado["datos"]["recurso"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblRecurso']"
+        ).text
+        resultado["datos"]["ubicacion"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblUbicacion']"
+        ).text
+        resultado["datos"]["demandantes"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblNomDemandante']"
+        ).text.split("-")[1:]
+        resultado["datos"]["demandantes"] = [x.strip() for x in resultado["datos"]["demandantes"]]
+        resultado["datos"]["demandados"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblNomDemandado']"
+        ).text.split("-")[1:]
+        resultado["datos"]["demandados"] = [x.strip() for x in resultado["datos"]["demandantes"]]
+        resultado["datos"]["contenido"] = wait_for_by_xpath(
+            contenedor, "//span[@id='lblContenido']"
+        ).text
+
+        resultado["actuaciones"] = contenedor.find_elements(
+            By.XPATH,
+            "//table[@class='ActuacionesDetalle']/tbody/tr[@class='tr_contenido']/td",
+        )
+        resultado["actuaciones"] = _tranform_table(resultado["actuaciones"], 6)
+    except RequestException as e:
+        logger.error("Parece que algo esta mal con la conexion a internet")
+    except KeyboardInterrupt:
+        logger.warning("Programa detenido")
+    except Exception as e:
+        logger.error("Un error inexperado ha ocurrido")
+        logger.exception(e)
+    finally:
+        try:
+            driver.close()
+        except:
+            pass
+        try:
+            if output_file:
+                with open(output_file, "w") as f:
+                    json.dump(resultado, f)
+        except Exception as e:
+            logger.error("No se ha podido guardar el resultado")
+            logger.exception(e)
+
+    logger.info("Scraping terminado")
+    return resultado
+
+
 @click.command()
 @click.option(
     "--text2search",
     prompt="Ingrese el texto a durante la busqueda",
     help="Texto a buscar",
 )
-@click.option("--output_file", default="output.xlsx")
-def scraping_wraper(text2search, output_file):
-    return scraping(text2search, output_file)
+@click.option("--output_file", default="output")
+@click.option('--code/--no-code', default=False)
+def scraping_wraper(text2search, output_file, code):
+    if not code:
+        output_file += ".xlsx"
+        return scraping_by_text(text2search, output_file)
+    else:
+        output_file += ".json"
+        return scraping_by_number(text2search, output_file)
 
 
 if __name__ == "__main__":
-    scraping_wraper()
+    scraping_wraper() # pylint: disable=E1120

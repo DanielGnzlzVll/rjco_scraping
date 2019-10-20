@@ -16,7 +16,7 @@ setup(
     author='Daniel gonzalez',
     author_email='jodgonzalezvi@unal.edu.co',
     license='APACHE',
-    version='0.0.1',
+    version='0.0.3',
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,

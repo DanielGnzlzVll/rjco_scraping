@@ -6,4 +6,5 @@ results = rjco_scraping.scraping(text2search="sura")
 #or 
 rjco_scraping.scraping(text2search="sura", output_file="result.xlsx")
 '''
-from .scraping import scraping
+from .scraping import scraping_by_text
+from .scraping import scraping_by_number

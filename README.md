@@ -27,7 +27,9 @@ python setup install
 ### from console
 
 ```bash
-python -m rjco_scraping
+python -m rjco_scraping 
+## search by ´´´numero de radicado´´
+python -m rjco_scraping --code
 ```
 
 ```bash
@@ -38,9 +40,15 @@ rjco_scraping
 
 ```python
 import rjco_scraping
-results = rjco_scraping.scraping(text2search="sura")
-#or 
-rjco_scraping.scraping(text2search="sura", output_file="result.xlsx")
+results = rjco_scraping.scraping_by_text(text2search="sura")
+# or 
+rjco_scraping.scraping_by_text(text2search="sura", output_file="result.xlsx")
+
+# search by ´´numero de radiacion´´
+rjco_scraping.scraping_by_number(code="05088310300120150079003",
+    output_file="result.json"
+)
+
 ```
 
 ## Windows
