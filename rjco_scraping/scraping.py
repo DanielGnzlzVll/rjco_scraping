@@ -158,7 +158,7 @@ def scrap_entity(driver, entity_name, entity_code, text2search):
     select_entidad = Select(ddlEntidadEspecialidad)
     select_entidad.select_by_value(entity_code)
     if test_error(driver):
-        logger.error(
+        logger.debug(
             "Se ha presentado una ventana "
             "de error inexperada para la entidad: " + entity_name.strip()
         )
@@ -197,7 +197,7 @@ def scrap_entity(driver, entity_name, entity_code, text2search):
     except TimeoutException:
         logger.info("No lo encuentro")
     if test_error(driver):
-        logger.error(
+        logger.debug(
             "Se ha presentado una ventana "
             "de error inexperada para la entidad: " + entity_name.strip()
         )
@@ -231,7 +231,7 @@ def scrap_city(driver, city_name, city_code, text2search):
     select_city = Select(ddlCiudad)
     select_city.select_by_value(city_code)
     if test_error(driver):
-        logger.error(
+        logger.debug(
             "Se ha presentado una ventana "
             "de error inexperada para la ciudad: " + city_name.strip()
         )
@@ -278,7 +278,7 @@ def scraping_by_text(text2search="sura", output_file=None):
         driver = webdriver.Chrome(ChromeDriverManager().install())
         driver.get(ENTRY_ENDPOINT)
         if test_error(driver):
-            logger.error("Se ha presentado una ventana de error inexperada")
+            logger.debug("Se ha presentado una ventana de error inexperada")
             return df
         # Se obtiene la lista de ciudad desde el selector
         citys = get_options(driver, "ddlCiudad")
@@ -349,14 +349,14 @@ def scraping_by_number(code="0508831030012015007900", output_file=None):
         driver = webdriver.Chrome(ChromeDriverManager().install())
         driver.get(ENTRY_ENDPOINT)
         if test_error(driver):
-            logger.error("Se ha presentado una ventana de error inexperada")
+            logger.debug("Se ha presentado una ventana de error inexperada")
 
         ddlCiudad = wait_for_by_name(driver, "ddlCiudad")
         select_city = Select(ddlCiudad)
         logger.info(f"Buscando en: {code[:5]}")
         select_city.select_by_value(code[:5])
         if test_error(driver):
-            logger.error(
+            logger.debug(
                 "Se ha presentado una ventana "
                 "de error inexperada para el numero de radicado: " + code
             )
@@ -370,7 +370,7 @@ def scraping_by_number(code="0508831030012015007900", output_file=None):
             raise Exception("Juzgado no encontrado")
         select_entidad.select_by_value(entitys[entity])
         if test_error(driver):
-            logger.error(
+            logger.debug(
                 "Se ha presentado una ventana "
                 "de error inexperada para el numero de radicado: " + code
             )
@@ -392,7 +392,7 @@ def scraping_by_number(code="0508831030012015007900", output_file=None):
         )
         btnConsulta.click()
         if test_error(driver):
-            logger.error(
+            logger.debug(
                 "Se ha presentado una ventana "
                 "de error inexperada para el numero de radicado: " + code
             )
