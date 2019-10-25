@@ -80,7 +80,7 @@ def wait_for_by_xpath(driver, element_xpath, timeout=10, wait_visibility=True):
     wait = WebDriverWait(driver, timeout)
     logger.debug("Esperando por: " + element_xpath)
     if wait_visibility:
-        check = ec.visibility_of_element_located
+        check = ec.presence_of_element_located
     else:
         check = ec.invisibility_of_element_located
     element = wait.until(check((By.XPATH, element_xpath)))
