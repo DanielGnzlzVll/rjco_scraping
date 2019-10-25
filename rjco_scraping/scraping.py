@@ -362,7 +362,13 @@ def scraping_by_number(code="0508831030012015007900", output_file=None):
             )
         ddlEntidadEspecialidad = wait_for_by_name(driver, "ddlEntidadEspecialidad")
         select_entidad = Select(ddlEntidadEspecialidad)
-        select_entidad.select_by_index(1)
+        entitys = get_options(driver, "ddlEntidadEspecialidad")
+        for entity in entitys:
+            if code[5:9] in entitys[entity]:
+                break
+        else:
+            raise Exception("Juzgado no encontrado")
+        select_entidad.select_by_value(entitys[entity])
         if test_error(driver):
             logger.error(
                 "Se ha presentado una ventana "
