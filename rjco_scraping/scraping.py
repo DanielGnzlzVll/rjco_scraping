@@ -426,7 +426,7 @@ def scraping_by_number(code="0508831030012015007900", output_file=None):
         resultado["datos"]["demandados"] = wait_for_by_xpath(
             contenedor, "//span[@id='lblNomDemandado']"
         ).text.split("-")[1:]
-        resultado["datos"]["demandados"] = [x.strip() for x in resultado["datos"]["demandantes"]]
+        resultado["datos"]["demandados"] = [x.strip() for x in resultado["datos"]["demandados"]]
         resultado["datos"]["contenido"] = wait_for_by_xpath(
             contenedor, "//span[@id='lblContenido']"
         ).text
